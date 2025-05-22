@@ -1,0 +1,25 @@
+Private Sub CmdClose_Click()
+    Unload Me
+End Sub
+
+Private Sub CmdGetBill_Click()
+    Cn.Execute "delete from temp_bill_details"
+    Cn.Execute "delete from temp_bill"
+
+    Cn.Execute "insert into temp_bill select * from bill where invoice_date>=#" & Format(DTPicker1.Value, "dd-mmm-yy") & "# and invoice_date<=#" & Format(DTPicker2.Value, "dd-mmm-yy") & "# and cname='" & CompanyName & "'"
+
+    Cn.Execute "insert into temp_bill_details select * from bill_details where bill_sno in ( select sno from bill where invoice_date >=#" & Format(DTPicker1.Value, "dd-mmm-yy") & "# and invoice_date<=#" & Format(DTPicker2.Value, "dd-mmm-yy") & "# and cname='" & CompanyName & "')"
+
+    Call OpenCon()
+    Cr1.DataFiles(0) = App.Path & "\data.mdb"
+    Cr1.WindowState = crptMaximized
+    Cr1.ReportFileName = App.Path & "\reports\billsummary.rpt"
+    Cr1.Action = 1
+End Sub
+
+Private Sub Form_Load()
+    Me.Left = (Screen.Width - Me.Width) / 2
+    Me.Top = (Screen.Height - Me.Height) / 2
+    DTPicker1.Value = Date
+    DTPicker2.Value = Date
+End Sub
