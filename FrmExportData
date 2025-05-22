@@ -1,0 +1,36 @@
+Private Sub CmdExcel_Click()
+    If Mf1.TextMatrix(0, 0) = "" Then
+        MsgBox "No Records Available for Exporting ...", vbExclamation
+        Exit Sub
+    End If
+
+    Label1.Caption = "WAIT ... Generate Excel "
+    Label1.Refresh()
+
+    Dim ex As New Excel.Application
+    Dim wb As Workbook
+    Dim Es As Worksheet
+    wb = ex.Workbooks.Add
+    Es = wb.Worksheets(1)
+
+    For i = 0 To Mf1.Cols - 1
+        Mf1.Row = 1
+        Mf1.Col = i
+        Es.Columns(ReturnAlphabet(i + 1) & ":" & ReturnAlphabet(i + 1)).ColumnWidth = Mf1.CellWidth / 110
+    Next
+
+    For i = 0 To Mf1.Rows - 1
+        For j = 0 To Mf1.Cols - 1
+            ex.Cells(i + 1, j + 1) = Mf1.TextMatrix(i, j)
+        Next
+    Next
+
+    ' Formatting omitted for brevity
+    ex.Visible = True
+    ex.Quit()
+    wb = Nothing
+    Es = Nothing
+    ex = Nothing
+    Label1.Caption = "Ready"
+    Label1.Refresh()
+End Sub
